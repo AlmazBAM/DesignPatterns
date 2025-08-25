@@ -3,21 +3,36 @@ package multithreading
 import kotlin.concurrent.thread
 
 fun main() {
-    thread {
-        repeat(100_000) {
-            print(" 0 ")
+
+    val counter = Counter()
+
+    val thread1 = thread {
+        repeat(1_000_000) {
+            counter.increment()
+        }
+    }
+    val thread2 = thread {
+        repeat(1_000_000) {
+            counter.increment()
         }
     }
 
-    Thread {
-        repeat(100_000) {
-            print(" $ ")
-        }
-    }.start()
+    thread1.join()
+    thread2.join()
 
-    thread {
-        repeat(100_000) {
-            print(" * ")
+    println(counter.number)
+
+}
+
+class Counter {
+
+    @Volatile
+    var number = 0
+
+    private val lock = Any()
+    fun increment() {
+        synchronized(lock) {
+            number++
         }
     }
 }
