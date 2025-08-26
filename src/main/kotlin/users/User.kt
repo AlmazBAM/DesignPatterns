@@ -1,4 +1,4 @@
-package patterns.singleton
+package users
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
