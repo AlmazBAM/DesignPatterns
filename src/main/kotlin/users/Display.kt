@@ -1,6 +1,5 @@
 package users
 
-import observer.Observer
 import java.awt.Dimension
 import java.awt.Font
 import java.awt.Insets
@@ -24,12 +23,10 @@ class Display {
             isResizable = false
             add(scrollPane)
         }
-        UserRepository.getInstance("qwerty").addObservers(object : Observer<List<User>> {
-            override fun onChanged(newValue: List<User>) {
-                newValue
-                    .joinToString("\n")
-                    .let { text.text = it }
-            }
-        })
+        UserRepository.getInstance("qwerty").addOnUsersChangedListeners { newValue ->
+            newValue
+                .joinToString("\n")
+                .let { text.text = it }
+        }
     }
 }

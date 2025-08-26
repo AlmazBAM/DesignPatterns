@@ -20,7 +20,7 @@ class UserRepository private constructor() {
         observers.forEach { it.onChanged(users) }
     }
 
-    fun addObservers(observer: Observer<List<User>>) {
+    fun addOnUsersChangedListeners(observer: Observer<List<User>>) {
         observers.add(observer)
         observer.onChanged(users)
     }
