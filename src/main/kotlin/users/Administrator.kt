@@ -7,7 +7,13 @@ class Administrator {
     fun work() {
         while (true) {
             print("Enter an operation: 0 - Exit, 1 - Add, 2 - Delete: ")
-            val operationIndex = readln().toInt()
+            val operationInput = readlnOrNull()
+            if (operationInput == null) {
+                println("Ввод больше недоступен, сохранение изменений и выход...")
+                repository.saveChanges()
+                break
+            }
+            val operationIndex = operationInput.toInt()
             val operation = Operation.entries[operationIndex]
             when (operation) {
                 Operation.EXIT -> {
