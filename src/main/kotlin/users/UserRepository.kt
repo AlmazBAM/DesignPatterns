@@ -1,45 +1,26 @@
 package users
 
 import kotlinx.serialization.json.Json
-import observer.Observable
-import observer.Observer
+import observer.MutableObservable
 import java.io.File
 
-class UserRepository private constructor() : Observable<List<User>> {
+class UserRepository private constructor() {
 
     private val file = File("profiles.json")
 
     private val _users = loadUsers()
+    val users = MutableObservable(_users.toList())
+    val oldestUser = MutableObservable(_users.maxBy { it.age })
 
-
-    private val _observers = mutableListOf<Observer<List<User>>>()
-    override val observers
-        get() = _observers.toList()
-
-    override val currentValue: List<User>
-        get() = _users.toList()
-
-    override fun addObserver(observer: Observer<List<User>>) {
-        _observers.add(observer)
-        observer.onChanged(currentValue)
-    }
-
-    override fun removeObserver(observer: Observer<List<User>>) {
-        _observers.remove(observer)
-    }
 
     private fun loadUsers(): MutableList<User> = Json.decodeFromString(file.readText().trim())
-
-    fun addOnUsersChangedListeners(observer: Observer<List<User>>) {
-        addObserver(observer)
-    }
 
     fun add(
         firstName: String,
         lastName: String,
         age: Int
     ) {
-        val id = currentValue.maxOf { it.id } + 1
+        val id = _users.maxOf { it.id } + 1
         _users.add(
             User(
                 id = id,
@@ -48,12 +29,17 @@ class UserRepository private constructor() : Observable<List<User>> {
                 age = age
             )
         )
-         notifyObservers()
+        users.currentValue = _users.toList()
+        if (age > oldestUser.currentValue.age)
+            oldestUser.currentValue = _users.maxBy { it.age }
     }
 
     fun delete(index: Int) {
         _users.removeIf { it.id == index }
-        notifyObservers()
+        users.currentValue = _users.toList()
+        val newOldest = _users.maxBy { it.age }
+        if (newOldest != oldestUser.currentValue)
+            oldestUser.currentValue = newOldest
     }
 
     fun saveChanges() {

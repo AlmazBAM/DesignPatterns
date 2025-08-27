@@ -13,5 +13,4 @@ interface Observable<T> {
             it.onChanged(currentValue)
         }
     }
-
 }
