@@ -27,6 +27,7 @@ class UserRepository private constructor() {
         age: Int
     ) {
         val id = usersList.maxOf { it.id } + 1
+        Thread.sleep(10000)
         usersList.add(
             User(
                 id = id,
@@ -41,6 +42,7 @@ class UserRepository private constructor() {
     }
 
     fun delete(index: Int) {
+        Thread.sleep(10000)
         usersList.removeIf { it.id == index }
         _users.currentValue = usersList.toList()
         val newOldest = usersList.maxBy { it.age }
